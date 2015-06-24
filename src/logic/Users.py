@@ -162,6 +162,60 @@ class User(ndb.Model):
     """
     Security Properties
     """
-    auth = ndb.StructuredProperty(AuthDetails, indexed=False)
+    auth = ndb.StructuredProperty(AuthDetails, indexed=False, required=True)
     
+    
+    
+    #Takes in a authToken's Key and converts it to a user object
+    #Returns (status, user) where
+    #   status - error code
+    #   user - user object or None on failure
+    @staticmethod
+    def authUser(authTokenKey):
+        status = 10
+        user = None
+        
+        if authTokenKey:
+            authToken = authTokenKey.get()
+            #check the key was valid
+            if authToken:
+                (success, user) = authToken.getUser()
+                if success and user:
+                    status = 0
+                else:
+                    status = 14
+            else:
+                status = 11 #Invalid Authtoken
+        else:
+            status = 11 #Invalid Authtoken
+        
+        return (status,user)
+    
+        #Takes in a users email and password
+        #Returns (status, user) where
+        #   status - error code
+        #   user - user object or None on failure
+        @staticmethod
+        def login(email, password):
+            status = 10
+            user = None
+            #assume one user per username
+            userResults = User.query(User.email == email).fetch(1)
+            if userResults and len(userResults) != 0:
+                u = userResults[0]
+                if u.auth:
+                    auth = u.auth.get()
+                    if auth.verifyPword(password):
+                        status = 0
+                        user = u
+                    else:
+                        status = 12
+                else:
+                    status = 3
+                    
+            else:
+                status = 12 #Invalid user
+    
+        
+        
     
