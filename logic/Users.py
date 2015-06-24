@@ -27,7 +27,7 @@ class Token(ndb.Model):
     user = ndb.KeyProperty(kind='User',required=True)
     #Stores the creation date of this object. This allows us to
     #remove properties that are too old
-    dateCreated = ndb.DateTimeProperty(auto_now_add, required=True)
+    dateCreated = ndb.DateTimeProperty(auto_now_add=True, required=True)
     
     """
     This function converts this token into a user.
@@ -100,7 +100,7 @@ class AuthDetails(ndb.Model):
     def randomStream(self):
         #if the streat has not been intilised yet
         if not self._randf:
-            self._ranf = Crypto.Random.new()
+            self._randf = Crypto.Random.new()
         return self._randf
     
     #used to generate the multiplier for the number of itterations we need
@@ -108,13 +108,13 @@ class AuthDetails(ndb.Model):
     #It doubles every two years from 2015
     def _multiplier(self):
         start = datetime.datetime(2015,1,1)
-        now = datetime.now()
+        now = datetime.datetime.now()
         return 2 ** ((now-start).days / 715)
     
     #used to calculate the number of itterations to use
     def _iterations(self):
         #the base, which grows with computational power
-        base_itres = int(self.ITERATIONS_2013 * self._multiplier())
+        base_iters = int(self.ITERATIONS * self._multiplier())
         
         #this variation allows us to increase the key space for the whole attack
         #by varying the number of itterations by 7%
@@ -127,11 +127,11 @@ class AuthDetails(ndb.Model):
     
     #Function used to generate a key from a password
     def _generateKey(self,pword):
-        return KDF.PBKDF2(pword, self.salt, dkLen=self.DK_LEN, count=self.iterations + self.ITER_OFFSET).encode('hex')
+        return KDF.PBKDF2(pword, self.salt, dkLen=self.KEY_LENGTH, count=self.iterations + self.ITER_OFFSET).encode('hex')
     
     #Sets the password
     def setPassword(self,password):
-        self.itterations = self._iterations()
+        self.iterations = self._iterations()
         #generate a salt
         self.salt = self.randomStream.read(32).encode('hex')
         #generate hash
@@ -164,7 +164,19 @@ class User(ndb.Model):
     """
     auth = ndb.StructuredProperty(AuthDetails, indexed=False, required=True)
     
-    
+    #Creates a new user
+    @staticmethod
+    def newUser(email, password, firstName, lastName, membershipNumber=None):
+        user = User(
+            email=email,
+            firstName=firstName,
+            lastName=lastName,
+            membershipNumber=membershipNumber
+        )
+        user.auth = AuthDetails()
+        user.auth.setPassword(password)
+        user.put()
+        return user
     
     #Takes in a authToken's Key and converts it to a user object
     #Returns (status, user) where
