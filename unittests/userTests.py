@@ -6,6 +6,9 @@ from google.appengine.ext import testbed
 from google.appengine.datastore import datastore_stub_util  # noqa
 
 import logic.Users as users
+
+import endPoints.users as userEndpoints
+
 import logging
 
 class UserTestCase(unittest.TestCase):
@@ -58,7 +61,49 @@ class UserTestCase(unittest.TestCase):
         self.assertEqual(res[0].firstName, "first")
         self.assertEqual(res[0].membershipNumber, 1234)
         
-
+    def testUserLogin(self):
+        user = users.User.newUser("test@test.com","pa$$W0rd","first","last",1234)
+        logging.info("testing return result")
+        assert user != None
+        assert user.key
+        logging.info("testing get")
+        assert user.key.get()
+        logging.info("testing query")
+        q = users.User.query(users.User.email == "test@test.com")
+        self.assertEquals(1,q.count(5))
+        res = q.fetch(1)
+        self.assertEquals(1,len(res))
+        self.assertEquals(user,res[0])
+        self.assertEqual(res[0].email, "test@test.com")
+        self.assertEqual(res[0].firstName, "first")
+        self.assertEqual(res[0].membershipNumber, 1234)
+        (status, user, auth) = user.login("test@test.com","pa$$W0rd")
+        assert user is not None
+        assert auth is not None
+        self.assertEqual(0,status)
+        
+    def testEndpointFunction_Login(self):
+        user = users.User.newUser("test@test.com","pa$$W0rd","first","last",1234)
+        logging.info("testing return result")
+        assert user != None
+        assert user.key
+        logging.info("testing get")
+        assert user.key.get()
+        logging.info("testing query")
+        q = users.User.query(users.User.email == "test@test.com")
+        self.assertEquals(1,q.count(5))
+        res = q.fetch(1)
+        self.assertEquals(1,len(res))
+        self.assertEquals(user,res[0])
+        self.assertEqual(res[0].email, "test@test.com")
+        self.assertEqual(res[0].firstName, "first")
+        self.assertEqual(res[0].membershipNumber, 1234)
+        
+        req = userEndpoints.LoginRequest(email="test@test.com", password="pa$$W0rd")
+        resp = userEndpoints.api.doLogin(req)
+        
+        self.assertEqual(0,resp.status)
+        assert resp.tokenKey is not None
 
        
 

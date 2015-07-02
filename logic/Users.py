@@ -203,31 +203,37 @@ class User(ndb.Model):
         
         return (status,user)
     
-        #Takes in a users email and password
-        #Returns (status, user) where
-        #   status - error code
-        #   user - user object or None on failure
-        @staticmethod
-        def login(email, password):
-            status = 10
-            user = None
-            #assume one user per username
-            userResults = User.query(User.email == email).fetch(1)
-            if userResults and len(userResults) != 0:
-                u = userResults[0]
-                if u.auth:
-                    auth = u.auth.get()
-                    if auth.verifyPword(password):
-                        status = 0
-                        user = u
-                    else:
-                        status = 12
+    #Takes in a users email and password
+    #Returns (status, user) where
+    #   status - error code
+    #   user - user object or None on failure
+    #   token - the token object or None on failure
+    @staticmethod
+    def login(email, password):
+        status = 10
+        user = None
+        #assume one user per username
+        userResults = User.query(User.email == email).fetch(1)
+        if userResults and len(userResults) != 0:
+            u = userResults[0]
+            if u.auth:
+                auth = u.auth
+                if auth.verifyPword(password):
+                    status = 0
+                    user = u
+                    token = Token(
+                        user = user.key
+                    )
+                    token.put()
+                    return (status, user, token)
                 else:
-                    status = 3
-                    
+                    status = 12
             else:
-                status = 12 #Invalid user
-    
+                status = 3
+                
+        else:
+            status = 12 #Invalid user
+        return (status, None, None)
         
         
     
