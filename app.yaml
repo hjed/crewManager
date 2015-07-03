@@ -9,6 +9,10 @@ handlers:
 - url: /static
   static_dir: static
 
+- url: /web
+  static_dir: web
+
+  
 # Endpoints handler
 - url: /_ah/spi/.*
   script: endPoints.api.app
