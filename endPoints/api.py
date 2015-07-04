@@ -14,8 +14,8 @@ import endPoints.users as users
 class CrewManagerApi(remote.Service):
     
     @endpoints.method(users.LoginRequest, users.LoginResponse,
-                  path='crewManagerApi/login', http_method='POST',
-                  name='crewManagerApi.Login')
+                  path='users/login', http_method='POST',
+                  name='users.login')
     def doLogin(self, request):
         return users.api.doLogin(request)
 

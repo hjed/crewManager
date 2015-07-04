@@ -32,22 +32,24 @@
       </div>
     </nav>
 
-    <div class="container centre-float" ng-controller="pageLoad">
+    <div class="container centre-float" ng-controller="pageLoad" ng-show="ready">
         <div ng-include="currentPage"></div>
     </div>
     
-    <!-- Bootstrap JS -->
+    <!-- JS MUST load in the following order, bootstrap/angular, app code, cloud endpoints -->
     
+    <!-- Bootstrap JS -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-
+    
     <!--Angular Script-->
-    <script>
-        var app = angular.module('crewManager', []); 
-        app.controller("pageLoad", function($scope) {
-            $scope.currentPage = "login.html"
-        });
-    </script>
+    <script src="app.js"></script>
+    
+    <!-- Google Endpoints -->
+    <script src="https://apis.google.com/js/client.js?onload=init"></script>
+
+    
+    
 </body>
 
 </html>

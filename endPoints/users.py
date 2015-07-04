@@ -25,7 +25,7 @@ class LoginResponse(messages.Message):
     #the status of the request
     status = messages.IntegerField(2, required=True)
     #the error message of the request (if the request fails)
-    errorMessage = messages.StringField(3, required=True)
+    errorMessage = messages.StringField(3, required=False)
     
 class api():
     
