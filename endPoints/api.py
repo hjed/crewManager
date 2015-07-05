@@ -18,5 +18,12 @@ class CrewManagerApi(remote.Service):
                   name='users.login')
     def doLogin(self, request):
         return users.api.doLogin(request)
+    
+    #used to retive basic user info
+    @endpoints.method(users.GetUserRequest, users.GetUserResponse,
+                  path='users/getUser', http_method='POST',
+                  name='users.getUser')
+    def getUser(self, request):
+        return users.api.getUser(request)
 
 app = endpoints.api_server([CrewManagerApi])

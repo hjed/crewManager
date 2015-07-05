@@ -9,7 +9,7 @@
     <!--Bootstrap Mobile Friendly-->
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
-<body ng-app="crewManager" >
+<body ng-app="crewManager"  ng-controller="pageLoad">
 
     <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container">
@@ -28,11 +28,16 @@
             <li><a href="#about">About</a></li>
             <li><a href="#contact">Contact</a></li>
           </ul>
+          <p class="navbar-right navbar-text" ng-show="loggedIn">
+            Welcome {{user.first}}
+          </p>
         </div><!--/.nav-collapse -->
+        
       </div>
+      
     </nav>
 
-    <div class="container centre-float" ng-controller="pageLoad" ng-show="ready">
+    <div class="container centre-float"  ng-show="ready">
         <div ng-include="currentPage"></div>
     </div>
     

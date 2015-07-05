@@ -3,6 +3,14 @@ app.controller("pageLoad", ['$scope','$rootScope','$window', function($scope,$ro
     $scope.currentPage = "login.html";
     //stores if the backend is ready to go
     $scope.ready = false;
+    //stores if the user is logged in
+    //NOTE: this should not be taken as correct without also checking the authToken
+    $scope.loggedIn = true;
+    //session token
+    $scope.authToken = null;
+    //user 
+    $scope.user = null;
+    
     //called to load the app
     $scope.startApp = function() {
         //load the cloud endpoints
@@ -18,6 +26,15 @@ app.controller("pageLoad", ['$scope','$rootScope','$window', function($scope,$ro
     $window.init = function() {
         $scope.$apply($scope.startApp);
     };
+    
+    //handles succesfull logins
+    $scope.loginSuccess = function(token) {
+            console.log("logged in");
+            $scope.authToken = token;
+            $scope.loggedIn = true;
+            //apply changes
+            $scope.$apply();
+    }
 }]);
 
 app.controller("loginForm", ['$scope','$rootScope','$window', function($scope,$rootScope,$window) {
@@ -32,7 +49,7 @@ app.controller("loginForm", ['$scope','$rootScope','$window', function($scope,$r
     $scope.errorCode = 0;
     //handles loging in
     $scope.doLogin = function(email,password) {
-        console.log("do Login")
+       
         request = {
             "email": email,
             "password": password
@@ -42,7 +59,6 @@ app.controller("loginForm", ['$scope','$rootScope','$window', function($scope,$r
             console.log(email)
             //login failed
             if (resp.status != 0) {
-                console.log("failure")
                 $scope.hasError = true;
                 $scope.errorCode = resp.status;
                 $scope.errorMessage = resp.errorMessage;
@@ -50,6 +66,8 @@ app.controller("loginForm", ['$scope','$rootScope','$window', function($scope,$r
             } else {
                //clear error message on success
                 $scope.hasError = false;
+                $scope.$parent.loginSuccess(resp.tokenKey);
+                
             }
             console.log(resp)
             //apply changes

@@ -40,7 +40,7 @@ class Token(ndb.Model):
         success = False;
         user = None
         #check we are not expired
-        if self.dateCreated <= (datetime.datetime.now() - datetime.timedelta(days=AUTH_TOKEN_VALID_FOR)):
+        if self.dateCreated <= (datetime.datetime.now() - datetime.timedelta(days=Token.AUTH_TOKEN_VALID_FOR)):
             #check we can retrive the user
             if self.user != None:
                 user = self.user.get()
@@ -182,6 +182,7 @@ class User(ndb.Model):
     #Returns (status, user) where
     #   status - error code
     #   user - user object or None on failure
+    #post-condition - if status is 0, user is not none
     @staticmethod
     def authUser(authTokenKey):
         status = 10
