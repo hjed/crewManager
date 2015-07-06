@@ -4,10 +4,10 @@ app.controller("pageLoad", ['$scope','$rootScope','$window', function($scope,$ro
     //stores if the backend is ready to go
     $scope.ready = false;
     //stores if the user is logged in
-    //NOTE: this should not be taken as correct without also checking the authToken
+    //NOTE: this should not be taken as correct without also checking the token
     $scope.loggedIn = true;
     //session token
-    $scope.authToken = null;
+    $scope.token = null;
     //user 
     $scope.user = null;
     
@@ -30,10 +30,29 @@ app.controller("pageLoad", ['$scope','$rootScope','$window', function($scope,$ro
     //handles succesfull logins
     $scope.loginSuccess = function(token) {
             console.log("logged in");
-            $scope.authToken = token;
+            $scope.token = token;
             $scope.loggedIn = true;
+            $scope.currentPage = "home.html";
             //apply changes
             $scope.$apply();
+            //load the user info
+            request = {
+                "token": $scope.token
+            };
+            console.log(request)
+            gapi.client.crewManagerApi.users.getUser(request).execute(function(resp) {
+                console.log(resp)
+                //login failed
+                if (resp.status != 0) {
+                    //TODO: error message
+                    
+                } else {
+                    $scope.user = resp.user
+                }
+                console.log(resp)
+                //apply changes
+                $scope.$apply();
+            });
     }
 }]);
 

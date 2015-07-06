@@ -40,12 +40,19 @@ class Token(ndb.Model):
         success = False;
         user = None
         #check we are not expired
-        if self.dateCreated <= (datetime.datetime.now() - datetime.timedelta(days=Token.AUTH_TOKEN_VALID_FOR)):
+        print self.dateCreated + datetime.timedelta(days=Token.AUTH_TOKEN_VALID_FOR)
+        print datetime.datetime.now()
+        
+        if (self.dateCreated + datetime.timedelta(days=Token.AUTH_TOKEN_VALID_FOR)) >= (datetime.datetime.now() ):
             #check we can retrive the user
-            if self.user != None:
+            if self.user is not None:
                 user = self.user.get()
-                if user != None:
+                if user is not None:
                     success = True
+                else:
+                    logging.info("user is none")
+            else:
+                logging.info("self.user is none")
         else:
             logging.info("Token expired")
             self.key.delete()
@@ -193,7 +200,7 @@ class User(ndb.Model):
             #check the key was valid
             if authToken:
                 (success, user) = authToken.getUser()
-                if success and user:
+                if success and user is not None:
                     status = 0
                 else:
                     status = 14

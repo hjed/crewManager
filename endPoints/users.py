@@ -30,8 +30,8 @@ class LoginResponse(messages.Message):
     errorMessage = messages.StringField(3, required=False)
     
 class GetUserRequest(messages.Message):
-    #the authToken of this user
-    authToken = messages.StringField(1, required=True)
+    #the token of this user
+    token = messages.StringField(1, required=True)
 
 
 class UserResponse(messages.Message):
@@ -71,7 +71,7 @@ class api():
     def getUser(req):
         resp = GetUserResponse(status = 1)
         
-        key = ndb.Key(urlsafe=req.authToken)
+        key = ndb.Key(urlsafe=req.token)
         if key:
             (resp.status, user) = Users.User.authUser(key)
             #we don't need to check user, because authUser checks
