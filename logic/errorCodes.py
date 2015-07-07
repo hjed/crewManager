@@ -3,7 +3,7 @@ ERROR_CODES = [
     "General Failure", #1 
     "General Key Error", #2 
     "Model Corrupt", #3
-    "", #4
+    "Key is None", #4
     "", #5
     "", #6
     "", #7

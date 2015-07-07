@@ -14,6 +14,8 @@ import Crypto.Random
 from Crypto.Protocol import KDF
 from google.appengine.ext import ndb
 
+from logic.tables import TableLink
+
 #A class for handeling authentication tokens
 #The key of this token is basically used as a sesion token
 #Because keys are guarented to be unique and somewhat random
@@ -165,11 +167,15 @@ class User(ndb.Model):
     email = ndb.StringProperty(required=True)
     #Stores the user's membership number
     membershipNumber = ndb.IntegerProperty(required=False)
-    
     """
     Security Properties
     """
     auth = ndb.StructuredProperty(AuthDetails, indexed=False, required=True)
+    """
+    Other Data
+    """
+    #Stores links to each table related to this user
+    tables = ndb.StructuredProperty(TableLink,repeated=True,indexed=False)
     
     #Creates a new user
     @staticmethod
