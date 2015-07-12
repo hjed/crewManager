@@ -12,16 +12,12 @@ from google.appengine.ext.db import BadValueError
 import datetime
 import logging
 
-class Table(polymodel.PolyModel):
-    #The user this table belongs to
-    user = ndb.Key(kind='User',required=True,indexed=True)
-
 
 class TableLink(ndb.Model):
     #The class name of the table
     tableName = ndb.StringProperty(indexed=False)
     #The key of the table object
-    link = ndb.KeyProperty(kind=Table,required=True,indexed=False)
+    link = ndb.KeyProperty(kind='Table',required=True,indexed=False)
     
     """
     Class Methods
@@ -41,6 +37,21 @@ class TableLink(ndb.Model):
                 return (2, None)
         else:
             return (4, None)
+    
+    
+class Table(polymodel.PolyModel):
+    #The user this table belongs to
+    user = ndb.KeyProperty(kind='User',required=True,indexed=True)
+    
+    #attaches a table to a user, should be called by a subclass
+    #The user and table must have already been created and put
+    #Inputs
+    #   - user - the user entity to attach this table to
+    #Returns
+    #   - status - the status code, 0 for success
+    def attachTable(self,user):
+        user.tables.append(TableLink(link=self.key, tableName=self.__class__.__name__))
+        user.put()
     
 
 #Most SIS10 Properties have a default set of values
@@ -67,18 +78,18 @@ class SIS10Table(Table):
     Water
     """
     canoeing = SIS10Property()
-    """
+    """s
     Bushwalking
     """
     #these ones are weird
-    bushwalking = ndb.StringProperty(choice=set(["Level 1","Level 2","Level 3","Alpine"]))
-    bushwalkingGuide = ndb.StringProperty(choice=set(["Level 1","Level 2","Level 3","Alpine"]))
+    bushwalking = ndb.StringProperty(choices=set(["Level 1","Level 2","Level 3","Alpine"]))
+    bushwalkingGuide = ndb.StringProperty(choices=set(["Level 1","Level 2","Level 3","Alpine"]))
     """
     Common Core, etc
     """
     commonCoreAB = ndb.BooleanProperty(default=False,required=True)
     trainATrainer = ndb.BooleanProperty(default=False, required=True)
-    firstAid = ndb.StringProperty(choice=set(["Apply","Advanced","Remote"]))
+    firstAid = ndb.StringProperty(choices=set(["Apply","Advanced","Remote"]))
     """
     Cert of Buisness
     """

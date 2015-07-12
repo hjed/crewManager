@@ -9,6 +9,7 @@ from protorpc import message_types
 from protorpc import remote
 
 import endPoints.users as users
+import endPoints.tables as tables
 
 @endpoints.api(name="crewManagerApi", version="v0.1", description="The Crew Manager Core API")
 class CrewManagerApi(remote.Service):
@@ -25,5 +26,12 @@ class CrewManagerApi(remote.Service):
                   name='users.getUser')
     def getUser(self, request):
         return users.api.getUser(request)
+    
+    #used to retive basic user info
+    @endpoints.method(users.GetUserRequest, tables.TableListResponse,
+                  path='tables/listUserTables', http_method='POST',
+                  name='tables.listUserTables')
+    def listUserTables(self, request):
+        return tables.api.listUserTables(request)
 
 app = endpoints.api_server([CrewManagerApi])
