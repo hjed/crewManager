@@ -1,3 +1,24 @@
+//some constants
+TABLE_NAMES = {"SIS10Table":"SIS10 Qualifications"}
+
+SIS10_COL_TITLES = {
+    "BPS": "BPS",
+    "Woodbeads": "Wood Beads",
+    "abseiling": "Abseiling",
+    "bushwalking": "Bushwalking",
+    "bushwalkingGuide": "Bushwalking Guide",
+    "canoeing": "Canoeing",
+    "canyoning": "Canyoning",
+    "caving": "Caving",
+    "commonCoreAB1": "Common Core A+B1",
+    "eLearning": "E-Learning",
+    "eLearningAdvanced": "Advanced E-Learning",
+    "firstAid": "First Aid",
+    "rockclimbing": "Rock Climbing",
+    "trainATrainer": "Train A Trainer"
+}
+
+
 var app = angular.module('crewManager', []); 
 app.controller("pageLoad", ['$scope','$rootScope','$window', function($scope,$rootScope,$window) {
     $scope.currentPage = "login.html";
@@ -95,6 +116,45 @@ app.controller("loginForm", ['$scope','$rootScope','$window', function($scope,$r
     };
 }]);
 
+app.controller("userTablesWidget", ['$scope','$rootScope','$window', function($scope,$rootScope,$window) {
+    $scope.tables = [];
+    
+    $scope.loadTable = function(table) {
+        req = {
+                "tokenKey": $scope.$parent.token,
+                "tableKey": table.tableKey
+        }
+        console.log(req)
+        gapi.client.crewManagerApi.tables.getSISTable(req).execute(function(resp) { 
+            console.log(resp)
+            if (resp.status == 0) {
+
+                table.data = [];
+                for (var key in resp.data) {
+                    table.data.push({
+                        "header":SIS10_COL_TITLES[key],
+                        "value": resp.data[key]
+                    });
+                }
+                $scope.$apply();
+            }
+        });
+    }
+    
+    //load the user's tables
+    req = {"token": $scope.$parent.token};
+    gapi.client.crewManagerApi.tables.listUserTables(req).execute(function(resp) { 
+        console.log(resp)
+        if (resp.status == 0) {
+            $scope.tables = resp.tables
+            $scope.tables.forEach(function(table) {
+                table.name = TABLE_NAMES[table.tableName];
+                $scope.loadTable(table);
+            });
+            $scope.$apply();
+        }
+    });
+}]);
 
 function init() {
     window.init();

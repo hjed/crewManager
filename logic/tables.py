@@ -52,6 +52,15 @@ class Table(polymodel.PolyModel):
     def attachTable(self,user):
         user.tables.append(TableLink(link=self.key, tableName=self.__class__.__name__))
         user.put()
+        
+    #Checks that the given user entity has read permsion on this table
+    #Inputs
+    #   user - the user
+    #Returns
+    #   true - if the user has permision, otherwise false
+    def hasReadPermision(self,user):
+        #TODO
+        return True
     
 
 #Most SIS10 Properties have a default set of values
@@ -60,9 +69,9 @@ class SIS10Property(ndb.StringProperty):
 
     #confirms that the value is valid
     def _validate(self,value):
-        if not isinstance(value, str):
+        if not isinstance(value, str) and value != "":
             raise TypeError('Excpected an string value, got %s' %repr(value))
-        elif value not in ["Level 1", "Level 2", "Level 3", "Guide", "Instructor",None]:
+        elif value not in ["Level 1", "Level 2", "Level 3", "Guide", "Instructor",""]:
             raise BadValueError("Expected " + str(["Level 1", "Level 2", "Level 3", "Guide", "Instructor"]))
 
 #A table representing SIS10 qualifications
@@ -70,26 +79,26 @@ class SIS10Table(Table):
     """
     Rockcraft
     """
-    abseiling = SIS10Property()
-    caving = SIS10Property()
-    canyoning = SIS10Property()
-    rockclimbing = SIS10Property()
+    abseiling = SIS10Property(required=True,default="")
+    caving = SIS10Property(required=True,default="")
+    canyoning = SIS10Property(required=True,default="")
+    rockclimbing = SIS10Property(required=True,default="")
     """
     Water
     """
-    canoeing = SIS10Property()
+    canoeing = SIS10Property(required=True,default="")
     """s
     Bushwalking
     """
     #these ones are weird
-    bushwalking = ndb.StringProperty(choices=set(["Level 1","Level 2","Level 3","Alpine"]))
-    bushwalkingGuide = ndb.StringProperty(choices=set(["Level 1","Level 2","Level 3","Alpine"]))
+    bushwalking = ndb.StringProperty(choices=set(["Level 1","Level 2","Level 3","Alpine",""]),default="")
+    bushwalkingGuide = ndb.StringProperty(choices=set(["Level 1","Level 2","Level 3","Alpine",""]),default="")
     """
     Common Core, etc
     """
-    commonCoreAB = ndb.BooleanProperty(default=False,required=True)
+    commonCoreAB1 = ndb.BooleanProperty(default=False,required=True)
     trainATrainer = ndb.BooleanProperty(default=False, required=True)
-    firstAid = ndb.StringProperty(choices=set(["Apply","Advanced","Remote"]))
+    firstAid = ndb.StringProperty(choices=set(["Apply","Advanced","Remote",""]),default="")
     """
     Cert of Buisness
     """

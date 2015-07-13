@@ -1,0 +1,19 @@
+<div class="panel panel-default" ng-controller="userTablesWidget">
+    <div class="panel-body">
+        <div class="widgetTable" ng-repeat="table in tables">
+            <table class="table">
+                <h3> {{table.name}} </h3>
+                <tr>
+                    <th ng-repeat="col in table.data">
+                        {{col.header}}
+                    </th>
+                </tr>
+                <tr>
+                    <td ng-repeat="col in table.data">
+                        {{col.value}}
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>

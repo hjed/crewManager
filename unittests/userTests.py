@@ -6,8 +6,10 @@ from google.appengine.ext import testbed
 from google.appengine.datastore import datastore_stub_util  # noqa
 
 import logic.Users as users
+import logic.tables as tables
 
 import endPoints.users as userEndpoints
+import endPoints.tables as tableEndpoints
 
 import logging
 
@@ -104,6 +106,38 @@ class UserTestCase(unittest.TestCase):
         
         self.assertEqual(0,resp.status)
         assert resp.tokenKey is not None
+        
+    def testEndpointFunction_TabeList(self):
+        user = users.User.newUser("test@test.com","pa$$W0rd","first","last",1234)
+        logging.info("testing return result")
+        assert user != None
+        assert user.key
+        logging.info("testing get")
+        assert user.key.get()
+        logging.info("testing query")
+        q = users.User.query(users.User.email == "test@test.com")
+        self.assertEquals(1,q.count(5))
+        res = q.fetch(1)
+        
+        table = tables.SIS10Table(user=res[0].key)
+        table.put()
+        table.attachTable(user)
+        self.assertEquals(1,len(res))
+        self.assertEquals(user,res[0])
+        self.assertEqual(res[0].email, "test@test.com")
+        self.assertEqual(res[0].firstName, "first")
+        self.assertEqual(res[0].membershipNumber, 1234)
+        
+        req = userEndpoints.LoginRequest(email="test@test.com", password="pa$$W0rd")
+        resp = userEndpoints.api.doLogin(req)
+        
+        self.assertEqual(0,resp.status)
+        assert resp.tokenKey is not None
+        req = userEndpoints.GetUserRequest(token=resp.tokenKey)
+        resp = tableEndpoints.api.listUserTables(req)
+        assert resp.status == 0
+        assert resp.tables is not None
+        assert resp.tables[0] is not None
 
        
 

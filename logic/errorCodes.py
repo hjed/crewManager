@@ -15,6 +15,13 @@ ERROR_CODES = [
     "Invalid credidentails (username or password)", #13
     "AuthToken does not reffer to user", #14
     "", #15
+    "", #16
+    "", #17
+    "", #18
+    "", #19
+    "General Permision Error", #20
+    "Table Read Permision Denied", #21
+    "Table Write Permission Denied", #22
     
     
     

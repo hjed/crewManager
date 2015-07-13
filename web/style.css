@@ -37,4 +37,8 @@ html {
 body {
     background: none !important;
 }
+
+td, th {
+    text-align: center;
+}
     
