@@ -71,7 +71,7 @@ class SIS10Property(ndb.StringProperty):
     def _validate(self,value):
         if not isinstance(value, str) and value != "":
             raise TypeError('Excpected an string value, got %s' %repr(value))
-        elif value not in ["Level 1", "Level 2", "Level 3", "Guide", "Instructor",""]:
+        elif value not in ["Level 1", "Level 2", "Guide", "Instructor",""]:
             raise BadValueError("Expected " + str(["Level 1", "Level 2", "Level 3", "Guide", "Instructor"]))
 
 #A table representing SIS10 qualifications

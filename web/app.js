@@ -1,4 +1,6 @@
 //some constants
+
+//TODO: load this from an api call
 TABLE_NAMES = {"SIS10Table":"SIS10 Qualifications"}
 
 SIS10_COL_TITLES = {
@@ -18,8 +20,39 @@ SIS10_COL_TITLES = {
     "trainATrainer": "Train A Trainer"
 }
 
+SIS10_COL_INPUT_TYPES = {
+    "BPS": "checkbox",
+    "Woodbeads": "checkbox",
+    "abseiling": "select",
+    "bushwalking": "select",
+    "bushwalkingGuide": "select",
+    "canoeing": "select",
+    "canyoning": "select",
+    "caving": "select",
+    "commonCoreAB1": "checkbox",
+    "eLearning": "checkbox",
+    "eLearningAdvanced": "checkbox",
+    "firstAid": "checkbox",
+    "rockclimbing": "select",
+    "trainATrainer": "checkbox"
+}
 
-var app = angular.module('crewManager', []); 
+//SIS10_DEFAULT_COL_OPTIONS = ["Level 1", "Level 2", "Guide", "Instructor", ""]
+SIS10_DEFAULT_COL_OPTIONS = ["1", "2", "G", "I", ""]
+SIS10_BWALK_COL_OPTIONS = ["Level 1", "Level 2", "Level 3", "Alpine", ""]
+SIS10_OPTIONS = {
+    "abseiling": SIS10_DEFAULT_COL_OPTIONS,
+    "bushwalking": SIS10_BWALK_COL_OPTIONS,
+    "bushwalkingGuide": SIS10_BWALK_COL_OPTIONS,
+    "canoeing": SIS10_DEFAULT_COL_OPTIONS,
+    "canyoning": SIS10_DEFAULT_COL_OPTIONS,
+    "caving": SIS10_DEFAULT_COL_OPTIONS,
+    "rockclimbing": SIS10_DEFAULT_COL_OPTIONS
+}
+
+
+
+var app = angular.module('crewManager', ['wt.responsive']); 
 app.controller("pageLoad", ['$scope','$rootScope','$window', function($scope,$rootScope,$window) {
     $scope.currentPage = "login.html";
     //stores if the backend is ready to go
@@ -131,10 +164,15 @@ app.controller("userTablesWidget", ['$scope','$rootScope','$window', function($s
 
                 table.data = [];
                 for (var key in resp.data) {
-                    table.data.push({
+                    tabl = {
                         "header":SIS10_COL_TITLES[key],
-                        "value": resp.data[key]
-                    });
+                        "value": resp.data[key],
+                        "inputType": SIS10_COL_INPUT_TYPES[key],
+                    }
+                    if (tabl["inputType"] == "select") {
+                        tabl["options"] = SIS10_OPTIONS[key]
+                    }
+                    table.data.push(tabl);
                 }
                 $scope.$apply();
             }

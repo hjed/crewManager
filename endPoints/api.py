@@ -40,5 +40,12 @@ class CrewManagerApi(remote.Service):
                   name='tables.getSISTable')
     def getTable(self, request):
         return tables.api.getSISTable(request)
+    
+    #used to retive basic user info
+    @endpoints.method(message_types.VoidMessage, tables.TableRenderingResponse,
+                  path='tables/getTableRendering', http_method='POST',
+                  name='tables.getTableRendering')
+    def getTableRendering(self, request):
+        return tables.api.getTableFormating(request)
 
 app = endpoints.api_server([CrewManagerApi])

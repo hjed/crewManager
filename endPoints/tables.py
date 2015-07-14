@@ -39,6 +39,41 @@ class TableRequest(messages.Message):
     tokenKey = messages.StringField(1, required=True)
     #the table's table's key
     tableKey = messages.StringField(2, required=True)
+    
+    
+"""
+Rendering
+"""
+#a message that represents how a specific column should be rendered
+class ColumnRenderingMessage(messages.Message):
+    #the name of the column in datastore/endpoints
+    dataStoreName = messages.StringField(1,required=True)
+    #the display name of the column (w/ spaces)
+    displayName = messages.StringField(2, required=True)
+    #the input type of the message. Supports any html input type= values + select
+    inputType = messages.StringField(3, required=True)
+    #the select options if this is a dropdown height
+    selectValues = messages.StringField(4,repeated=True)
+    selectShortNames = messages.StringField(5, repeated=True)
+
+
+#a class that represents how a specific table should be rendered
+class TableRenderingMessage(messages.Message):
+    #the name of the column in datastore/endpoints
+    className = messages.StringField(1,required=True)
+    #the display name of the column (w/ spaces)
+    displayName = messages.StringField(2, required=True)
+    #the columns
+    columns = messages.MessageField(ColumnRenderingMessage,3,repeated=True)
+    
+#a class used to communicate the table reandering
+class TableRenderingResponse(message.Message):
+    status =  messages.IntegerField(1,required=True)
+    #the tables
+    tables = messages.MessageField(TableRenderingMessage, 2, repeated=True)
+"""
+SIS10 Tables
+"""
 
 class SIS10DataResponse(messages.Message):
     #leave the first 10 free for tabledata
@@ -139,4 +174,108 @@ class api():
                     resp.status = 21 #read permision denied
             else:
                 resp.status = 2
+        return resp
+    
+    #for now this is hardcoded, eventually this will be stored in ds
+    def getTableFormating(req):
+        SIS10_SELECT_SHORT_COLS = ["1", "2", "G", "I", "-"]
+        SIS10_SELECT_VALUE_COLS = ["Level 1", "Level 2", "Guide", "Instructor", ""]
+        SIS10_BWALK_COL_VALUE_OPTIONS = ["Level 1", "Level 2", "Level 3", "Alpine", ""]
+        SIS10_BWALK_COL_SHORT_OPTIONS = ["1", "2", "3", "Alp", "-"]
+        
+        resp = TableRenderingMessage(
+            status=0,
+            tables = [
+                TableRenderingMessage(
+                    className="SIS10Table",
+                    displayName="SIS10 Qualifications",
+                    columns = [
+                        ColumnRenderingMessage(
+                             dataStoreName = "BPS",
+                             displayName = "BPS",
+                             inputType="checkbox"
+                         ),
+                        ColumnRenderingMessage(
+                             dataStoreName = "Woodbeads",
+                             displayName = "Wood Beads",
+                             inputType="checkbox"
+                         ),
+                        ColumnRenderingMessage(
+                             dataStoreName = "abseiling",
+                             displayName = "Abseiling",
+                             inputType="select",
+                             selectValues = SIS10_SELECT_VALUE_COLS,
+                             selectShortNames = SIS10_SELECT_SHORT_COLS
+                         ),
+                        ColumnRenderingMessage(
+                             dataStoreName = "bushwalking",
+                             displayName = "Bushwalking",
+                             inputType="select",
+                             selectValues = SIS10_BWALK_COL_VALUE_OPTIONS,
+                             selectShortNames = SIS10_BWALK_COL_SHORT_OPTIONS
+                         ),
+                        ColumnRenderingMessage(
+                             dataStoreName = "bushwalkingGuide",
+                             displayName = "Bushwalking Guide",
+                             inputType="select",
+                             selectValues = SIS10_BWALK_COL_VALUE_OPTIONS,
+                             selectShortNames = SIS10_BWALK_COL_SHORT_OPTIONS
+                         ),
+                        ColumnRenderingMessage(
+                             dataStoreName = "canoeing",
+                             displayName = "Canoeing",
+                             inputType="select",
+                             selectValues = SIS10_SELECT_VALUE_COLS,
+                             selectShortNames = SIS10_SELECT_SHORT_COLS
+                         ),
+                        ColumnRenderingMessage(
+                             dataStoreName = "canyoning",
+                             displayName = "Canyoning",
+                             inputType="select",
+                             selectValues = SIS10_SELECT_VALUE_COLS,
+                             selectShortNames = SIS10_SELECT_SHORT_COLS
+                         ),
+                        ColumnRenderingMessage(
+                             dataStoreName = "caving",
+                             displayName = "Caving",
+                             inputType="select",
+                             selectValues = SIS10_SELECT_VALUE_COLS,
+                             selectShortNames = SIS10_SELECT_SHORT_COLS
+                         ),
+                        ColumnRenderingMessage(
+                             dataStoreName = "commonCoreAB1",
+                             displayName = "Common Core A+B1",
+                             inputType="checkbox"
+                         ),
+                        ColumnRenderingMessage(
+                             dataStoreName = "eLearning",
+                             displayName = "E-Learning",
+                             inputType="checkbox"
+                         ),
+                        ColumnRenderingMessage(
+                             dataStoreName = "eLearningAdvanced",
+                             displayName = "Advanced E-Learning",
+                             inputType="checkbox"
+                         ),
+                        ColumnRenderingMessage(
+                             dataStoreName = "firstAid",
+                             displayName = "First Aid",
+                             inputType="checkbox"
+                         ),
+                        ColumnRenderingMessage(
+                             dataStoreName = "rockclimbing",
+                             displayName = "Rock Climbing",
+                             inputType="select",
+                             selectValues = SIS10_SELECT_VALUE_COLS,
+                             selectShortNames = SIS10_SELECT_SHORT_COLS
+                         ),
+                        ColumnRenderingMessage(
+                             dataStoreName = "trainATrainer",
+                             displayName = "Train A Trainer",
+                             inputType="checkbox"
+                         )
+                    ]
+                )
+            ]
+        )
         return resp
