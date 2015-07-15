@@ -18,7 +18,7 @@
                     <td  ng-repeat="col in table.data">
                         <input type="{{col.inputType}}" ng-model="col.value" ng-if="col.inputType=='checkbox'"/>
                         <select  ng-model="col.value" ng-if="col.inputType=='select'">
-                            <option ng-repeat="opt in col.options" value="{{opt}}">{{opt}} </option>
+                            <option ng-repeat="opt in col.options" value="{{opt.value}}">{{opt.display}} </option>
                         </select>
                     </td>
                 </tr>

@@ -67,7 +67,7 @@ class TableRenderingMessage(messages.Message):
     columns = messages.MessageField(ColumnRenderingMessage,3,repeated=True)
     
 #a class used to communicate the table reandering
-class TableRenderingResponse(message.Message):
+class TableRenderingResponse(messages.Message):
     status =  messages.IntegerField(1,required=True)
     #the tables
     tables = messages.MessageField(TableRenderingMessage, 2, repeated=True)
@@ -177,13 +177,14 @@ class api():
         return resp
     
     #for now this is hardcoded, eventually this will be stored in ds
+    @staticmethod
     def getTableFormating(req):
         SIS10_SELECT_SHORT_COLS = ["1", "2", "G", "I", "-"]
         SIS10_SELECT_VALUE_COLS = ["Level 1", "Level 2", "Guide", "Instructor", ""]
         SIS10_BWALK_COL_VALUE_OPTIONS = ["Level 1", "Level 2", "Level 3", "Alpine", ""]
         SIS10_BWALK_COL_SHORT_OPTIONS = ["1", "2", "3", "Alp", "-"]
         
-        resp = TableRenderingMessage(
+        resp = TableRenderingResponse(
             status=0,
             tables = [
                 TableRenderingMessage(

@@ -65,6 +65,27 @@ app.controller("pageLoad", ['$scope','$rootScope','$window', function($scope,$ro
     //user 
     $scope.user = null;
     
+    //for rendering tables`
+    $scope.tables = {}
+    
+    $scope.loadTableRendering = function() {
+
+            gapi.client.crewManagerApi.tables.getTableRendering({}).execute(function(resp) {
+                console.log(resp)
+                resp.tables.forEach(function(table) {
+                    $scope.tables[table.className] = table;
+                    columns = {}
+                    $scope.tables[table.className].columns.forEach(function(col) {
+                        columns[col.dataStoreName] = col
+                    });
+                    $scope.tables[table.className].columns = columns;
+                    $scope.$apply();
+                });
+                console.log($scope.tables);
+            });
+    }
+    
+    
     //called to load the app
     $scope.startApp = function() {
         //load the cloud endpoints
@@ -73,6 +94,7 @@ app.controller("pageLoad", ['$scope','$rootScope','$window', function($scope,$ro
             $scope.ready = true;
             //needed because this runs in a different thread to angular
             $scope.$apply();
+            $scope.loadTableRendering();
         }, ROOT);
     };
     
@@ -161,16 +183,18 @@ app.controller("userTablesWidget", ['$scope','$rootScope','$window', function($s
         gapi.client.crewManagerApi.tables.getSISTable(req).execute(function(resp) { 
             console.log(resp)
             if (resp.status == 0) {
-
                 table.data = [];
+                console.log($scope.$parent.tables)
                 for (var key in resp.data) {
                     tabl = {
-                        "header":SIS10_COL_TITLES[key],
+                        "header":$scope.$parent.tables[resp.tableName].columns[key].displayName,
                         "value": resp.data[key],
-                        "inputType": SIS10_COL_INPUT_TYPES[key],
+                        "inputType": $scope.$parent.tables[resp.tableName].columns[key].inputType,
                     }
                     if (tabl["inputType"] == "select") {
-                        tabl["options"] = SIS10_OPTIONS[key]
+                        tabl["options"] = {}
+                        tabl["options"]["values"] = $scope.$parent.tables[resp.tableName].columns[key].displayName.selectValues
+                        tabl["options"]["display"] =$scope.$parent.tables[resp.tableName].columns[key].displayName.selectShortNames
                     }
                     table.data.push(tabl);
                 }
