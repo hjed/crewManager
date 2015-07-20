@@ -192,9 +192,15 @@ app.controller("userTablesWidget", ['$scope','$rootScope','$window', function($s
                         "inputType": $scope.$parent.tables[resp.tableName].columns[key].inputType,
                     }
                     if (tabl["inputType"] == "select") {
-                        tabl["options"] = {}
-                        tabl["options"]["values"] = $scope.$parent.tables[resp.tableName].columns[key].displayName.selectValues
-                        tabl["options"]["display"] =$scope.$parent.tables[resp.tableName].columns[key].displayName.selectShortNames
+                        tabl["options"] = []
+                        var len = $scope.$parent.tables[resp.tableName].columns[key].selectValues.length;
+                        for(i = 0; i < len; i++) {
+                            tabl["options"][i] = {}
+                            tabl["options"][i]["values"] = $scope.$parent.tables[resp.tableName].columns[key].selectValues[i];
+                            tabl["options"][i]["display"] =$scope.$parent.tables[resp.tableName].columns[key].selectShortNames[i];
+                        }
+                        
+                        
                     }
                     table.data.push(tabl);
                 }

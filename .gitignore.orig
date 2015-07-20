@@ -1,5 +1,7 @@
+<<<<<<< HEAD
 *.pyc
 *~
+=======
 # Google App Engine generated folder
 appengine-generated/
-*.orig
+>>>>>>> origin/master
