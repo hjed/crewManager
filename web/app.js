@@ -52,7 +52,7 @@ SIS10_OPTIONS = {
 
 
 
-var app = angular.module('crewManager', ['wt.responsive']); 
+var app = angular.module('crewManager', ['wt.responsive','ui.bootstrap']); 
 app.controller("pageLoad", ['$scope','$rootScope','$window', function($scope,$rootScope,$window) {
     $scope.currentPage = "login.html";
     //stores if the backend is ready to go
@@ -171,9 +171,28 @@ app.controller("loginForm", ['$scope','$rootScope','$window', function($scope,$r
     };
 }]);
 
-app.controller("userTablesWidget", ['$scope','$rootScope','$window', function($scope,$rootScope,$window) {
+app.controller("userTablesWidget", function($scope,$modal,$log) {
     $scope.tables = [];
-    
+    $scope.openModal = function (col) {
+
+        var modalInstance = $modal.open({
+            animation: true,
+            templateUrl: 'myModalContent.html',
+            controller: 'tableSelectModal',
+            resolve: { //adds variables to the controller
+                col: function () {
+                    return col;
+                }
+            }
+        });
+
+        modalInstance.result.then(function (value) {
+            col.value = value;
+            $scope.$apply();
+        }, function () {
+            $log.info('Modal dismissed at: ' + new Date());
+        });
+    };
     $scope.loadTable = function(table) {
         req = {
                 "tokenKey": $scope.$parent.token,
@@ -193,11 +212,13 @@ app.controller("userTablesWidget", ['$scope','$rootScope','$window', function($s
                     }
                     if (tabl["inputType"] == "select") {
                         tabl["options"] = []
+                        tabl["optionMap"] = {}
                         var len = $scope.$parent.tables[resp.tableName].columns[key].selectValues.length;
                         for(i = 0; i < len; i++) {
                             tabl["options"][i] = {}
                             tabl["options"][i]["values"] = $scope.$parent.tables[resp.tableName].columns[key].selectValues[i];
                             tabl["options"][i]["display"] =$scope.$parent.tables[resp.tableName].columns[key].selectShortNames[i];
+                            tabl["optionMap"][$scope.$parent.tables[resp.tableName].columns[key].selectValues[i]] = $scope.$parent.tables[resp.tableName].columns[key].selectShortNames[i];
                         }
                         
                         
@@ -222,7 +243,21 @@ app.controller("userTablesWidget", ['$scope','$rootScope','$window', function($s
             $scope.$apply();
         }
     });
-}]);
+});
+
+
+
+app.controller("tableSelectModal", function($scope,$modalInstance, col) {
+    $scope.col = col
+    
+    $scope.ok = function () {
+        $modalInstance.close($scope.col.value);
+    };
+
+    $scope.cancel = function () {
+        $modalInstance.dismiss('cancel');
+    };
+});
 
 function init() {
     window.init();

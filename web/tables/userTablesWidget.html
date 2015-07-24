@@ -1,4 +1,23 @@
 <div class="panel panel-default" ng-controller="userTablesWidget">
+    <!-- Modal For Editing Select Properties -->
+    <script type="text/ng-template" id="myModalContent.html">
+        <div class="modal-header">
+            <h3 class="modal-title">{{col.header}}</h3>
+        </div>
+        Please select your {{col.header}} qualification level from the dropdown.
+        <div class="modal-body">
+          <!--   <select  ng-model="col.value"  ng-options="opt.value as opt.display for opt in col.options"></select> -->
+            <div class="btn-group">
+                <label class="btn btn-primary" ng-model="col.value" btn-radio="opt.values" ng-repeat="opt in col.options">{{opt.values}}</label>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" ng-click="ok()">OK</button>
+            <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+        </div>
+        
+    </script>
+
     <div class="panel-heading">
     Your Qualifications
     </div>
@@ -17,10 +36,9 @@
                 <tr>
                     <td  ng-repeat="col in table.data">
                         <input type="{{col.inputType}}" ng-model="col.value" ng-if="col.inputType=='checkbox'"/>
-                        <select  ng-model="col.value" ng-if="col.inputType=='select'" ng-options="opt.value as opt.display for opt in col.options">
-<!--                             <option ng-repeat="opt in col.options" value="{{opt.value}}">{{opt.display}} </option> -->
-                        </select>
-                        <span>{{col.value}}</span>
+                         <button class="btn btn-default" ng-if="col.inputType=='select'" ng-click="openModal(col)">{{col.optionMap[col.value]}}</button>
+                        
+<!--                         <span>{{col.value}}</span> -->
                     </td>
                 </tr>
                 </tbody>
@@ -29,20 +47,3 @@
         </div>
     </div>
 </div>
-<!-- <div class="col-sm-1" ng-repeat="col in table.data">
-                <table class="table table-condensed table-table" >
-                    <tr style="height: 50px">
-                        <th >
-                            {{col.header}}
-                        </th>
-                    </tr>
-                    <tr>
-                        <td>
-                            <input type="{{col.inputType}}" ng-model="col.value" ng-if="col.inputType=='checkbox'"/>
-                            <select  ng-model="col.value" ng-if="col.inputType=='select'">
-                                <option ng-repeat="opt in col.options" value="{{opt}}">{{opt}} </option>
-                            </select>
-                        </td>
-                    </tr>
-                </table>
-            </div> -->
